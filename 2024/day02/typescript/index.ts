@@ -8,6 +8,7 @@ file.forEach((line) => {
     const report = line.split(" ");
     const orderAsc = Number(report[0]) < Number(report[1]);
 
+    
     for (let i = 0; i < report.length; i++) {
         if (i == report.length - 1) {
             safeCounter++;
