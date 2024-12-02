@@ -20,13 +20,27 @@ export async function getList(): Promise<{
 
 const { leftList, rightList } = await getList();
 
-leftList.sort((a, b) => a - b);
-rightList.sort((a, b) => a - b);
+const rightMap = new Map()
 
-const distance = leftList.map((left, index) => {
-    return Math.abs(left - rightList[index]);
-})
+for (let i = 0; i < rightList.length; i++) {
+    const right = rightList[i];
 
-const sum = distance.reduce((acc, current) => acc + current, 0);
+    rightMap.set(right, rightMap.get(right) + 1 || 1);
+}
 
-console.log("Total distance: ", sum);
+let similarityScore = 0;
+
+for (let i = 0; i < leftList.length; i++) {
+    const left = leftList[i];
+    const rightOccurences = rightMap.get(left);
+
+    if (!rightOccurences) {
+        continue;
+    }
+
+    const score = left * rightOccurences
+
+    similarityScore += score;
+}
+
+console.log("Similarity score: ", similarityScore);
