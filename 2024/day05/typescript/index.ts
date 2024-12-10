@@ -20,13 +20,7 @@ function parseInput(input: string[]) {
   return { orderingRules, updateList };
 }
 
-function part1({
-  orderingRules,
-  updateList,
-}: {
-  orderingRules: string[];
-  updateList: string[][];
-}) {
+const getRules = (orderingRules: string[]) => {
   const rules = new Map<string, string[]>();
 
   for (const rule of orderingRules) {
@@ -39,25 +33,8 @@ function part1({
     }
   }
 
-  let sumOfTheMiddlePagesOfValidUpdates = 0;
-
-  for (const update of updateList) {
-    const isValid = isValidUpdate({
-      orderingRules: rules,
-      update,
-    });
-
-    if (isValid) {
-      const length = update.length;
-      const middleIndex = Math.floor(length / 2);
-      const middlePage = update[middleIndex];
-
-      sumOfTheMiddlePagesOfValidUpdates += parseInt(middlePage);
-    }
-  }
-
-  return sumOfTheMiddlePagesOfValidUpdates;
-}
+  return rules;
+};
 
 function isValidUpdate({
   orderingRules,
@@ -82,6 +59,76 @@ function isValidUpdate({
   return true;
 }
 
+function orderUpdate({
+  orderingRules,
+  update,
+}: {
+  orderingRules: Map<string, string[]>;
+  update: string[];
+}) {
+
+  /// TODO: Implement the ordering of the update array. Maybe using topoligical sort ?
+  return update;
+}
+
+function part1({
+  orderingRules,
+  updateList,
+}: {
+  orderingRules: string[];
+  updateList: string[][];
+}) {
+  const rules = getRules(orderingRules);
+
+  let sumOfTheMiddlePagesOfValidUpdates = 0;
+
+  for (const update of updateList) {
+    const isValid = isValidUpdate({
+      orderingRules: rules,
+      update,
+    });
+
+    if (isValid) {
+      const length = update.length;
+      const middleIndex = Math.floor(length / 2);
+      const middlePage = update[middleIndex];
+
+      sumOfTheMiddlePagesOfValidUpdates += parseInt(middlePage);
+    }
+  }
+
+  return sumOfTheMiddlePagesOfValidUpdates;
+}
+
+function part2({
+  orderingRules,
+  updateList,
+}: {
+  orderingRules: string[];
+  updateList: string[][];
+}) {
+  const rules = getRules(orderingRules);
+
+  for (const update of updateList) {
+    const isValid = isValidUpdate({
+      orderingRules: rules,
+      update,
+    });
+
+    if (!isValid) {
+      const orderedUpdate = orderUpdate({
+        orderingRules: rules,
+        update,
+      });
+
+      console.log({
+        orderedUpdate,
+        update,
+      });
+    }
+  }
+}
+
 async function main() {
   const lines = await readFile("../input.txt");
   const { orderingRules, updateList } = parseInput(lines);
@@ -93,6 +140,13 @@ async function main() {
   });
   console.timeEnd("execution time part1");
   console.log("Part 1 result:", part1Result);
+
+  console.time("execution time part2");
+  part2({
+    orderingRules,
+    updateList,
+  });
+  console.timeEnd("execution time part2");
 }
 
 main();

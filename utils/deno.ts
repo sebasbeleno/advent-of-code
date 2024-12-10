@@ -31,3 +31,7 @@ export async function readFile(filePath:string): Promise<string[]> {
 
     return lines
 }
+
+export function replaceCharAt(str: string, index: number, replacement: string) {
+    return str.substr(0, index) + replacement + str.substr(index + replacement.length);
+}
