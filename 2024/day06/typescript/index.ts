@@ -5,8 +5,8 @@ function part1(map: string[]) {
   let steps = 1;
 
   while (true) {
-    renderMap(map);
-    const { x: newCol, y: newRow } = getFordwardPosition(col, row, map);
+    //renderMap(map);
+    let { x: newCol, y: newRow } = getFordwardPosition(col, row, map);
 
     if (
       newCol < 0 ||
@@ -17,23 +17,14 @@ function part1(map: string[]) {
       break;
     }
 
-    if (map[newCol][newRow] === "#") {
-      const { newPosition, characterDirection } = turn90Degrees(
-        { col, row },
-        map[col][row]
-      );
+    while (map[newCol][newRow] === "#") {
+      const newDirection = turn90Degrees(map[col][row]);
+      map = updateCharacterPositionOnMap(map, { col, row }, newDirection);
 
-      map = updateCharacterPositionOnMap(
-        map,
-        { col, row },
-        newPosition,
-        characterDirection
-      );
+      const newPosition = getFordwardPosition(col, row, map);
 
-      row = newPosition.row;
-      col = newPosition.col;
-      steps++;
-      continue;
+      newCol = newPosition.x;
+      newRow = newPosition.y;
     }
 
     const nextPosition = map[newCol][newRow];
@@ -41,22 +32,22 @@ function part1(map: string[]) {
     if (nextPosition === "X") {
       map = updateCharacterPositionOnMap(
         map,
-        { col, row },
         { col: newCol, row: newRow },
         map[col][row]
       );
 
+      map = markPositionAsVisited(map, { col, row });
       row = newRow;
       col = newCol;
       continue;
     } else {
       map = updateCharacterPositionOnMap(
         map,
-        { col, row },
         { col: newCol, row: newRow },
         map[col][row]
       );
 
+      map = markPositionAsVisited(map, { col, row });
       row = newRow;
       col = newCol;
       steps++;
@@ -81,60 +72,36 @@ function getFordwardPosition(col: number, row: number, map: string[]) {
   }
 }
 
-function turn90Degrees(
-  characterCurrentPosition: { col: number; row: number },
-  direction: string
-) {
+function turn90Degrees(direction: string) {
   if (direction === "^") {
-    return {
-      newPosition: {
-        col: characterCurrentPosition.col,
-        row: characterCurrentPosition.row + 1,
-      },
-      characterDirection: ">",
-    };
+    return ">";
   } else if (direction === ">") {
-    return {
-      newPosition: {
-        col: characterCurrentPosition.col + 1,
-        row: characterCurrentPosition.row,
-      },
-      characterDirection: "v",
-    };
+    return "v";
   } else if (direction === "v") {
-    return {
-      newPosition: {
-        col: characterCurrentPosition.col,
-        row: characterCurrentPosition.row - 1,
-      },
-      characterDirection: "<",
-    };
+    return "<";
   } else {
-    return {
-      newPosition: {
-        col: characterCurrentPosition.col - 1,
-        row: characterCurrentPosition.row,
-      },
-      characterDirection: "^",
-    };
+    return "^";
   }
 }
 function updateCharacterPositionOnMap(
   map: string[],
-  currentPosition: { col: number; row: number },
-  newPosition: { col: number; row: number },
+  position: { col: number; row: number },
   characterDirection: string
 ) {
-  map[currentPosition.col] = replaceCharAt(
-    map[currentPosition.col],
-    currentPosition.row,
-    "X"
-  );
-  map[newPosition.col] = replaceCharAt(
-    map[newPosition.col],
-    newPosition.row,
+  map[position.col] = replaceCharAt(
+    map[position.col],
+    position.row,
     characterDirection
   );
+
+  return map;
+}
+
+function markPositionAsVisited(
+  map: string[],
+  position: { col: number; row: number }
+) {
+  map[position.col] = replaceCharAt(map[position.col], position.row, "X");
 
   return map;
 }
