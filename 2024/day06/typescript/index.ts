@@ -5,7 +5,7 @@ function part1(map: string[]) {
   let steps = 1;
 
   while (true) {
-    //renderMap(map);
+    renderMap(map);
     let { x: newCol, y: newRow } = getFordwardPosition(col, row, map);
 
     if (
@@ -25,6 +25,7 @@ function part1(map: string[]) {
 
       newCol = newPosition.x;
       newRow = newPosition.y;
+      renderMap(map);
     }
 
     const nextPosition = map[newCol][newRow];
@@ -83,6 +84,7 @@ function turn90Degrees(direction: string) {
     return "^";
   }
 }
+
 function updateCharacterPositionOnMap(
   map: string[],
   position: { col: number; row: number },
