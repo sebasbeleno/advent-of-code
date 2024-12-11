@@ -1,70 +1,70 @@
 import { readFile, replaceCharAt } from "../../../utils/deno.ts";
 
 function part1(map: string[]) {
-  const [row, col] = searchStartPosition(map);
-  let steps = 0;
+  let [row, col] = searchStartPosition(map);
+  let steps = 1;
 
-  return move(map, col, row, 1);
-}
+  while (true) {
+    renderMap(map);
+    const { x: newCol, y: newRow } = getFordwardPosition(col, row, map);
 
-function move(map: string[], col: number, row: number, steps: number) {
-  //renderMap(map);
+    if (
+      newCol < 0 ||
+      newCol >= map.length ||
+      newRow < 0 ||
+      newRow >= map[0].length
+    ) {
+      break;
+    }
 
-  const { x: newCol, y: newRow } = getFordwardPosition(col, row, map);
-  if (
-    newCol < 0 ||
-    newCol >= map.length ||
-    newRow < 0 ||
-    newRow >= map[0].length
-  ) {
-    return steps;
-  }
+    if (map[newCol][newRow] === "#") {
+      const { newPosition, characterDirection } = turn90Degrees(
+        { col, row },
+        map[col][row]
+      );
 
-  if (map[newCol][newRow] === "#") {
-    const { newPosition, characterDirection } = turn90Degrees(
-      { col, row },
-      map[col][row]
-    );
-
-    return move(
-      updateCharacterPositionOnMap(
+      map = updateCharacterPositionOnMap(
         map,
         { col, row },
         newPosition,
         characterDirection
-      ),
-      newPosition.col,
-      newPosition.row,
-      steps + 1
-    );
+      );
+
+      row = newPosition.row;
+      col = newPosition.col;
+      steps++;
+      continue;
+    }
+
+    const nextPosition = map[newCol][newRow];
+
+    if (nextPosition === "X") {
+      map = updateCharacterPositionOnMap(
+        map,
+        { col, row },
+        { col: newCol, row: newRow },
+        map[col][row]
+      );
+
+      row = newRow;
+      col = newCol;
+      continue;
+    } else {
+      map = updateCharacterPositionOnMap(
+        map,
+        { col, row },
+        { col: newCol, row: newRow },
+        map[col][row]
+      );
+
+      row = newRow;
+      col = newCol;
+      steps++;
+      continue;
+    }
   }
 
-  const nextPosition = map[newCol][newRow];
-  if (nextPosition === "X") {
-    return move(
-      updateCharacterPositionOnMap(
-        map,
-        { col, row },
-        { col: newCol, row: newRow },
-        map[col][row]
-      ),
-      newCol,
-      newRow,
-      steps
-    );
-  } else {
-    return move(
-      updateCharacterPositionOnMap(
-        map,
-        { col, row },
-        { col: newCol, row: newRow },
-        map[col][row]
-      ),
-      newCol,
-      newRow,
-      steps + 1
-    );
-  }
+  return steps;
 }
 
 function getFordwardPosition(col: number, row: number, map: string[]) {
