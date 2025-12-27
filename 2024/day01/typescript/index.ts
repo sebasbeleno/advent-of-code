@@ -1,4 +1,4 @@
-import { readFile } from "../../../utils/deno.ts";
+import { readFile } from "../../../utils/bun.ts";
 
 export async function getList(): Promise<{
   leftList: number[];
